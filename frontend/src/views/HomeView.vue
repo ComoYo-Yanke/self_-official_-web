@@ -195,6 +195,9 @@ const deleteFile = (id) => {
                 <button class="btn btn-outline" @click="toggleAdminMode">
                     {{ isAdminMode ? '退出管理' : '管理后台' }}
                 </button>
+                <button class="btn btn-outline">
+                    在线聊天室
+                </button>
             </div>
         </nav>
 
