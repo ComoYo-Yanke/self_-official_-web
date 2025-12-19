@@ -35,7 +35,7 @@
 ```json
 {
   "code": 200,
-  "message": "操作成功",
+  "message": "success",
   "data": {},
   "timestamp": "2024-01-20T10:00:00Z"
 }
@@ -99,7 +99,7 @@ Content-Type: application/json
 ```json
 {
   "code": 200,
-  "message": "登录成功",
+  "message": "success",
   "data": {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
     "user": {
@@ -117,6 +117,7 @@ Content-Type: application/json
 - 400: 请求参数错误
 - 401: 用户名或密码错误
 - 429: 请求过于频繁
+- 403: 拒绝当前IP访问
 
 ---
 
@@ -138,7 +139,7 @@ Content-Type: application/json
 ```json
 {
   "code": 200,
-  "message": "退出成功",
+  "message": "success",
   "data": null,
   "timestamp": "2024-01-20T10:00:00Z"
 }
