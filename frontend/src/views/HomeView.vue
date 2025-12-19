@@ -1,4 +1,5 @@
 <script setup>
+
 import { ref, reactive, computed } from 'vue'
 import { productAPI } from '@/api/products'
 import { authAPI } from '@/api/auth'
@@ -417,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <footer class="footer container">
             <div>
                 <i class="fab fa-github" style="font-size: 24px; margin-bottom: 10px;"></i>
-                <div>© 2023 开发者姓名. 保留所有权利。</div>
+                <div>© 2025 CoMoYo-Yanke. 保留所有权利。</div>
                 <div style="margin-top: 8px; font-size: 13px;">本页面设计灵感来自GitHub</div>
             </div>
             <div class="footer-links">
@@ -460,7 +461,15 @@ body {
     background-color: #121923; */
     line-height: 1.5;
 }
+body::-webkit-scrollbar{
+    background-color: var(--github-bg);
+    width: 8px;
 
+}
+body::-webkit-scrollbar-thumb{
+    background-color: var(--github-border);
+    border-radius: 5px;
+}
 .container {
     max-width: 1280px;
     margin: 0 auto;
