@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="nav container">
                 <div class="nav-logo">
                     <i class="fab fa-github"></i>
-                    <span>个人官网</span>
+                    <span>个人官网</span>   
                 </div>
                 <div class="nav-links">
                     <a href="#" class="nav-link">概览</a>
@@ -151,19 +151,19 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                     </div>
 
-                    <div class="profile-stats">
+                    <div class="profile-stats" style="margin-left: 10px;">
                         <div class="stat-item">
                             <span class="stat-count">24</span>
                             <span>项目</span>
                         </div>
-                        <div class="stat-item">
+                        <!-- <div class="stat-item">
                             <span class="stat-count">128</span>
                             <span>粉丝</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-count">56</span>
                             <span>关注</span>
-                        </div>
+                        </div> -->
                     </div>
 
                     <div class="profile-location">
@@ -173,6 +173,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="profile-email">
                         <i class="fas fa-envelope"></i>
                         <span>dev@example.com</span>
+                    </div>
+                    <div class="profile-bilibili" style="margin-left: 10px;">
+                        <i class="fas fa-envelope"></i>
+                        <a href="https://space.bilibili.com/489802543?spm_id_from=333.1007.0.0" target="_blank">
+                            bilibili</a>
+                    </div>
+
+                    <div class="profile-github" style="margin-left: 10px;">
+                        <i class="fas fa-envelope"></i>
+                        <a href="https://github.com/ComoYo-Yanke " target="_blank">
+                            GitHub</a>
                     </div>
                 </div>
 
@@ -442,6 +453,7 @@ document.addEventListener('DOMContentLoaded', function () {
     --github-green: #238636;
     --github-purple: #8957e5;
     --github-orange: #f78166;
+    --github-a: #F0F6FC;
 }
 
 * {
@@ -449,6 +461,13 @@ document.addEventListener('DOMContentLoaded', function () {
     padding: 0;
     box-sizing: border-box;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    a{
+        color: var(--github-a);
+        text-decoration: none;
+    }
+    a:hover{
+        text-decoration: solid;
+    }
 }
 
 body {
@@ -577,8 +596,9 @@ body::-webkit-scrollbar-thumb{
 }
 
 .profile-bio {
-    font-size: 14px;
-    margin-bottom: 15px;
+    font-size: 12px;
+    margin-bottom: 20px;
+    color: var(--github-text-secondary);
 }
 
 .profile-stats {
