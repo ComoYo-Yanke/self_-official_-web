@@ -12,7 +12,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="$PROJECT_DIR$/../../MvnRepository/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
+          <entry name="$PROJECT_DIR$/../../../MvnRepository/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
         </processorPath>
         <module name="bankend" />
       </profile>
