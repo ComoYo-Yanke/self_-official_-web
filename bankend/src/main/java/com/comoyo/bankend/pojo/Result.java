@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cglib.core.Local;
+
+import java.util.Date;
 
 
 /**
@@ -18,11 +21,13 @@ public class Result {
     private Integer code; //编码：1成功，0为失败
     private String msg; //错误信息
     private Object data; //数据
+    private Date time;
     
     public static Result success() {
         Result result = new Result();
         result.code = 1;
         result.msg = "success";
+        result.time = new Date();
         return result;
     }
     
