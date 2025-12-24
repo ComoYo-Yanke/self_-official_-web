@@ -1,5 +1,6 @@
 package com.comoyo.bankend.pojo;
 
+import ch.qos.logback.classic.pattern.ClassOfCallerConverter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,6 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cglib.core.Local;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.chrono.ChronoLocalDate;
 import java.util.Date;
 
 
@@ -21,13 +26,13 @@ public class Result {
     private Integer code; //编码：1成功，0为失败
     private String msg; //错误信息
     private Object data; //数据
-    private Date time;
+    private LocalDateTime date;
     
     public static Result success() {
         Result result = new Result();
         result.code = 1;
         result.msg = "success";
-        result.time = new Date();
+        result.date = LocalDateTime.now();
         return result;
     }
     
@@ -37,6 +42,7 @@ public class Result {
                 "code=" + code +
                 ", msg='" + msg + '\'' +
                 ", data=" + data +
+                ", date=" + date +
                 '}';
     }
     
@@ -73,6 +79,10 @@ public class Result {
     public void setData(Object data) {
         this.data = data;
     }
+    
+    public void setDate(LocalDateTime date) {this.date = date;}
+    
+    public LocalDateTime getDate() {return date;}
     
     public static Result error(String msg) {
         Result result = new Result();
