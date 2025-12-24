@@ -1,530 +1,926 @@
 <script setup>
+
 import { ref, reactive, computed } from 'vue'
 import { productAPI } from '@/api/products'
 import { authAPI } from '@/api/auth'
 import { fileAPI } from '@/api/file'
 
 const testDepts = async () => {
-    try{
+    try {
         const response = await fileAPI.testDepts();
         console.log("测试接口返回:" + response);
-    }catch(err){
+    } catch (err) {
         console.error("测试接口错误:" + err);
-        
+
     }
 }
 window.addEventListener('load', testDepts);
 
-// 管理员模式
-const isAdminMode = ref(false)
+// 登录认证
+
 // 产品数据
-const products = ref([
-    {
-        id: 1,
-        name: 'LiMind',
-        description: '一款免费的极简思维导图工具。',
-        image: '/static/LiMind.png',
-        downloadUrl: '#',
-        size: '45.2 MB',
-        version: 'v2.1.0'
-    },
-    {
-        id: 2,
-        name: 'CodeSnippet Manager',
-        description: '智能代码片段管理工具，支持多语言高亮和团队协作，提升开发效率的得力助手。',
-        image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop',
-        downloadUrl: '#',
-        size: '28.7 MB',
-        version: 'v1.4.2'
-    },
-    {
-        id: 3,
-        name: 'Design System Kit',
-        description: '完整的设计系统组件库，包含100+精心设计的UI组件，帮助团队保持设计一致性。',
-        image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=200&fit=crop',
-        downloadUrl: '#',
-        size: '15.3 MB',
-        version: 'v3.0.1'
-    },
-    {
-        id: 4,
-        name: 'API Dashboard',
-        description: '实时API监控和分析面板，提供详细的性能指标和错误追踪，保障服务稳定性。',
-        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop',
-        downloadUrl: '#',
-        size: '62.8 MB',
-        version: 'v1.2.3'
-    }
-])
+
 
 // 文件数据
-const files = ref([
-    {
-        id: 1,
-        name: 'QuickNote-Pro-v2.1.0.dmg',
-        size: '45.2 MB',
-        uploadTime: '2024-01-15',
-        downloadUrl: '#'
-    },
-    {
-        id: 2,
-        name: 'CodeSnippet-Manager-Windows.exe',
-        size: '28.7 MB',
-        uploadTime: '2024-01-10',
-        downloadUrl: '#'
-    },
-    {
-        id: 3,
-        name: 'Design-System-Kit-v3.0.1.zip',
-        size: '15.3 MB',
-        uploadTime: '2024-01-08',
-        downloadUrl: '#'
+document.addEventListener('DOMContentLoaded', function () {
+    // 标签切换功能
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabId = tab.getAttribute('data-tab');
+
+            // 移除所有标签的active类
+            tabs.forEach(t => t.classList.remove('active'));
+            // 隐藏所有内容
+            tabContents.forEach(content => {
+                content.style.display = 'none';
+                content.classList.remove('active');
+            });
+
+            // 激活当前标签
+            tab.classList.add('active');
+            // 显示对应内容
+            const activeContent = document.getElementById(tabId);
+            activeContent.style.display = 'block';
+            activeContent.classList.add('active');
+        });
+    });
+
+    // 生成30天贡献图
+    const contributionGraph = document.getElementById('contributionGraph');
+    const levels = [0, 1, 2, 3, 4];
+
+    for (let i = 0; i < 30; i++) {
+        const cell = document.createElement('div');
+        const randomLevel = levels[Math.floor(Math.random() * levels.length)];
+        cell.className = `graph-cell level-${randomLevel}`;
+        cell.title = `${30 - i} 天前: ${randomLevel === 0 ? '无活动' : `${randomLevel} 次贡献`}`;
+        contributionGraph.appendChild(cell);
     }
-])
 
-// 新产品表单
-const newProduct = reactive({
-    name: '',
-    description: '',
-    file: null
-})
+    // 生成年度贡献图（简化的12个月版本）
+    const yearlyGraph = document.getElementById('yearlyGraph');
+    const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
 
-// 计算属性
-const canAddProduct = computed(() => {
-    return newProduct.name.trim() &&
-        newProduct.description.trim() &&
-        newProduct.file
-})
+    months.forEach(month => {
+        const monthContainer = document.createElement('div');
+        monthContainer.style.display = 'flex';
+        monthContainer.style.flexDirection = 'column';
+        monthContainer.style.gap = '4px';
+        monthContainer.style.alignItems = 'center';
 
-// 方法
-const toggleAdminMode = () => {
-    isAdminMode.value = !isAdminMode.value
-}
+        const monthLabel = document.createElement('div');
+        monthLabel.textContent = month;
+        monthLabel.style.fontSize = '11px';
+        monthLabel.style.color = 'var(--github-text-secondary)';
+        monthLabel.style.marginBottom = '4px';
 
-const handleFileSelect = (event) => {
-    newProduct.file = event.target.files[0]
-}
+        monthContainer.appendChild(monthLabel);
 
-const addProduct = () => {
-    if (!canAddProduct.value) return
+        // 每个月生成4周的贡献图
+        for (let week = 0; week < 4; week++) {
+            const weekContainer = document.createElement('div');
+            weekContainer.style.display = 'flex';
+            weekContainer.style.gap = '2px';
 
-    const newId = Math.max(...products.value.map(p => p.id)) + 1
+            // 每周生成7天的贡献图
+            for (let day = 0; day < 7; day++) {
+                const cell = document.createElement('div');
+                const randomLevel = levels[Math.floor(Math.random() * levels.length)];
+                cell.className = `graph-cell level-${randomLevel}`;
+                cell.style.width = '10px';
+                cell.style.height = '10px';
+                weekContainer.appendChild(cell);
+            }
 
-    products.value.push({
-        id: newId,
-        name: newProduct.name,
-        description: newProduct.description,
-        image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400&h=200&fit=crop',
-        downloadUrl: '#',
-        size: `${(newProduct.file.size / (1024 * 1024)).toFixed(1)} MB`,
-        version: 'v1.0.0'
-    })
+            monthContainer.appendChild(weekContainer);
+        }
 
-    // 同时添加到文件列表
-    files.value.unshift({
-        id: Math.max(...files.value.map(f => f.id)) + 1,
-        name: newProduct.file.name,
-        size: `${(newProduct.file.size / (1024 * 1024)).toFixed(1)} MB`,
-        uploadTime: new Date().toISOString().split('T')[0],
-        downloadUrl: '#'
-    })
+        yearlyGraph.appendChild(monthContainer);
+    });
 
-    // 重置表单
-    newProduct.name = ''
-    newProduct.description = ''
-    newProduct.file = null
-    event.target.value = ''
-}
+    // 模拟项目卡片悬停效果
+    const projectCards = document.querySelectorAll('.project-card');
+    projectCards.forEach(card => {
+        card.addEventListener('mouseenter', function () {
+            this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+        });
 
-const deleteProduct = (id) => {
-    if (confirm('确定要删除这个产品吗？')) {
-        products.value = products.value.filter(p => p.id !== id)
-    }
-}
+        card.addEventListener('mouseleave', function () {
+            this.style.boxShadow = 'none';
+        });
+    });
 
-const deleteFile = (id) => {
-    if (confirm('确定要删除这个文件吗？')) {
-        files.value = files.value.filter(f => f.id !== id)
-    }
-}
+    // 模拟动态加载效果
+    console.log('GitHub风格个人官网已加载');
+});
 </script>
 
 <template>
-    <div class="home">
-        <!-- 导航栏 -->
-        <nav class="navbar">
-            <div class="container navbar-content">
-                <a href="#" class="logo">
-                    <svg width="50" height="50" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <!-- 背景圆形 -->
-                        <circle cx="100" cy="100" r="90" fill="#f8f9fa" stroke="#e9ecef" stroke-width="2" />
-
-                        <!-- 主要图标 - 简约的几何组合 -->
-                        <g transform="translate(100, 100)">
-                            <!-- 中心六边形 -->
-                            <polygon points="0,-35 30,-17.5 30,17.5 0,35 -30,17.5 -30,-17.5" fill="none"
-                                stroke="#2563eb" stroke-width="3" stroke-linejoin="round" />
-
-                            <!-- 内部圆环 -->
-                            <circle cx="0" cy="0" r="18" fill="none" stroke="#3b82f6" stroke-width="2.5" />
-
-                            <!-- 中心点 -->
-                            <circle cx="0" cy="0" r="6" fill="#1d4ed8" />
-
-                            <!-- 四个方向的小圆点 -->
-                            <circle cx="0" cy="-25" r="3" fill="#60a5fa" />
-                            <circle cx="25" cy="0" r="3" fill="#60a5fa" />
-                            <circle cx="0" cy="25" r="3" fill="#60a5fa" />
-                            <circle cx="-25" cy="0" r="3" fill="#60a5fa" />
-                        </g>
-
-                        <!-- 外圈的微妙装饰元素 -->
-                        <g transform="translate(100, 100)" opacity="0.3">
-                            <circle cx="0" cy="-60" r="2" fill="#94a3b8" />
-                            <circle cx="42" cy="-42" r="2" fill="#94a3b8" />
-                            <circle cx="60" cy="0" r="2" fill="#94a3b8" />
-                            <circle cx="42" cy="42" r="2" fill="#94a3b8" />
-                            <circle cx="0" cy="60" r="2" fill="#94a3b8" />
-                            <circle cx="-42" cy="42" r="2" fill="#94a3b8" />
-                            <circle cx="-60" cy="0" r="2" fill="#94a3b8" />
-                            <circle cx="-42" cy="-42" r="2" fill="#94a3b8" />
-                        </g>
-                    </svg>
-                    <span>Dev</span><span class="logo-accent">Portfolio</span>
-                </a>
-                <button class="btn btn-outline" @click="toggleAdminMode">
-                    {{ isAdminMode ? '退出管理' : '管理后台' }}
-                </button>
-            </div>
-        </nav>
-
-        <!-- Hero区域 -->
-        <section class="hero">
-            <div class="container hero-content">
-                <div class="profile">
-                    <img src="/static/hero-bg-img.png" alt="Profile" class="profile-avatar">
-                    <h1 class="profile-name">CoMoYo-Yanke</h1>
-                    <p class="profile-bio">全栈开发者 & 产品设计师 | 专注于创造优雅的数字体验</p>
-                    <div class="profile-contact">
-                        <a href="https://space.bilibili.com/489802543?spm_id_from=333.1007.0.0" target="_blank"
-                            class="contact-link">
-                            <span>Bilibili</span>
-                        </a>
-                        <a href="https://github.com/CoMoYo-Yanke" target="_blank" class="contact-link">
-                            <span>GitHub</span>
-                        </a>
-                        <a href="https://gitee.com/yanke_4_0/" target="_blank" class="contact-link">
-                            <span>Gitee</span>
-                        </a>
-                    </div>
+    <div class="container">
+        <!-- 头部导航 -->
+        <header class="header">
+            <div class="nav container">
+                <div class="nav-logo">
+                    <i class="fab fa-github"></i>
+                    <span>个人官网</span>   
+                </div>
+                <div class="nav-links">
+                    <a href="#" class="nav-link">概览</a>
+                    <a href="#" class="nav-link">项目</a>
+                    <a href="#" class="nav-link">动态</a>
+                    <a href="#" class="nav-link">简历</a>
+                    <img src="https://avatars.githubusercontent.com/u/583231?v=4" alt="头像" class="avatar">
                 </div>
             </div>
-        </section>
+        </header>
 
-        <!-- 产品展示 -->
-        <section class="section">
-            <div class="container">
-                <h2 class="section-title">我的作品</h2>
-                <p class="section-subtitle">
-                    这里展示了我独立开发的一些产品和工具，每个项目都倾注了心血和热情
-                </p>
+        <!-- 主要内容 -->
+        <main class="main-content container">
+            <!-- 左侧边栏 - 个人资料 -->
+            <aside class="sidebar">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <img src="https://avatars.githubusercontent.com/u/583231?v=4" alt="个人头像" class="profile-avatar">
+                        <div class="profile-info">
+                            <h2>开发者姓名</h2>
+                            <div class="profile-username">@dev-username</div>
+                            <div class="profile-bio">全栈开发者 | Vue.js爱好者 | 开源贡献者</div>
+                        </div>
+                    </div>
 
-                <div class="products-grid">
-                    <div v-for="product in products" :key="product.id" class="product-card">
-                        <img :src="product.image" :alt="product.name" class="product-image">
-                        <div class="product-content">
-                            <h3 class="product-title">{{ product.name }}</h3>
-                            <p class="product-description">{{ product.description }}</p>
-                            <div class="product-meta">
-                                <span class="product-size">{{ product.size }}</span>
-                                <div class="product-actions">
-                                    <a :href="product.downloadUrl" class="btn btn-primary btn-sm" download>
-                                        下载
-                                    </a>
-                                    <button v-if="isAdminMode" class="btn btn-danger btn-sm"
-                                        @click="deleteProduct(product.id)">
-                                        删除
-                                    </button>
+                    <div class="profile-stats" style="margin-left: 10px;">
+                        <div class="stat-item">
+                            <span class="stat-count">24</span>
+                            <span>项目</span>
+                        </div>
+                        <!-- <div class="stat-item">
+                            <span class="stat-count">128</span>
+                            <span>粉丝</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-count">56</span>
+                            <span>关注</span>
+                        </div> -->
+                    </div>
+
+                    <div class="profile-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>中国 · 上海</span>
+                    </div>
+                    <div class="profile-email">
+                        <i class="fas fa-envelope"></i>
+                        <span>dev@example.com</span>
+                    </div>
+                    <div class="profile-bilibili" style="margin-left: 10px;">
+                        <i class="fas fa-envelope"></i>
+                        <a href="https://space.bilibili.com/489802543?spm_id_from=333.1007.0.0" target="_blank">
+                            bilibili</a>
+                    </div>
+
+                    <div class="profile-github" style="margin-left: 10px;">
+                        <i class="fas fa-envelope"></i>
+                        <a href="https://github.com/ComoYo-Yanke " target="_blank">
+                            GitHub</a>
+                    </div>
+                </div>
+
+                <div class="profile-card">
+                    <h3 style="margin-bottom: 15px; font-size: 16px;">热门项目</h3>
+                    <div style="margin-bottom: 10px;">
+                        <a href="#"
+                            style="color: var(--github-blue); text-decoration: none; font-size: 14px; display: block; margin-bottom: 8px;">
+                            <i class="fas fa-book"></i> vue-admin-system
+                        </a>
+                        <div style="font-size: 12px; color: var(--github-text-secondary);">
+                            基于Vue 3的管理系统
+                        </div>
+                    </div>
+                    <div>
+                        <a href="#"
+                            style="color: var(--github-blue); text-decoration: none; font-size: 14px; display: block; margin-bottom: 8px;">
+                            <i class="fas fa-book"></i> react-utility-hooks
+                        </a>
+                        <div style="font-size: 12px; color: var(--github-text-secondary);">
+                            实用的React Hooks集合
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 主要内容区域 -->
+            <div class="content">
+                <!-- 标签导航 -->
+                <div class="tab-nav">
+                    <button class="tab active" data-tab="projects">
+                        项目 <span class="tab-count">8</span>
+                    </button>
+                    <button class="tab" data-tab="activity">
+                        动态 <span class="tab-count">42</span>
+                    </button>
+                    <button class="tab" data-tab="contributions">
+                        贡献 <span class="tab-count">365</span>
+                    </button>
+                </div>
+
+                <!-- 项目部分 -->
+                <div id="projects" class="tab-content active">
+                    <div class="projects-grid">
+                        <!-- 项目卡片 1 -->
+                        <div class="project-card">
+                            <div class="project-header">
+                                <a href="#" class="project-title">vue-admin-system</a>
+                                <span class="project-visibility">公开</span>
+                            </div>
+                            <p class="project-description">
+                                基于Vue 3和Element Plus的后台管理系统，包含用户管理、权限控制、数据可视化等功能。
+                            </p>
+                            <div class="project-meta">
+                                <div class="project-language">
+                                    <span class="language-color vue"></span>
+                                    <span>Vue</span>
+                                </div>
+                                <div>
+                                    <i class="far fa-star"></i> 128
+                                </div>
+                                <div>
+                                    <i class="fas fa-code-branch"></i> 3
+                                </div>
+                                <div>
+                                    更新于 2 天前
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 项目卡片 2 -->
+                        <div class="project-card">
+                            <div class="project-header">
+                                <a href="#" class="project-title">react-utility-hooks</a>
+                                <span class="project-visibility">公开</span>
+                            </div>
+                            <p class="project-description">
+                                一套实用的React Hooks集合，包括useLocalStorage、useFetch、useDarkMode等常用Hook。
+                            </p>
+                            <div class="project-meta">
+                                <div class="project-language">
+                                    <span class="language-color javascript"></span>
+                                    <span>JavaScript</span>
+                                </div>
+                                <div>
+                                    <i class="far fa-star"></i> 89
+                                </div>
+                                <div>
+                                    <i class="fas fa-code-branch"></i> 7
+                                </div>
+                                <div>
+                                    更新于 1 周前
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 项目卡片 3 -->
+                        <div class="project-card">
+                            <div class="project-header">
+                                <a href="#" class="project-title">data-visualization-tool</a>
+                                <span class="project-visibility">公开</span>
+                            </div>
+                            <p class="project-description">
+                                基于D3.js和ECharts的数据可视化工具，支持多种图表类型和数据源导入。
+                            </p>
+                            <div class="project-meta">
+                                <div class="project-language">
+                                    <span class="language-color javascript"></span>
+                                    <span>JavaScript</span>
+                                </div>
+                                <div>
+                                    <i class="far fa-star"></i> 56
+                                </div>
+                                <div>
+                                    <i class="fas fa-code-branch"></i> 2
+                                </div>
+                                <div>
+                                    更新于 3 周前
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 项目卡片 4 -->
+                        <div class="project-card">
+                            <div class="project-header">
+                                <a href="#" class="project-title">portfolio-website</a>
+                                <span class="project-visibility">公开</span>
+                            </div>
+                            <p class="project-description">
+                                响应式个人作品集网站，使用Vue 3和Tailwind CSS构建，支持暗黑模式。
+                            </p>
+                            <div class="project-meta">
+                                <div class="project-language">
+                                    <span class="language-color html"></span>
+                                    <span>HTML</span>
+                                </div>
+                                <div>
+                                    <i class="far fa-star"></i> 42
+                                </div>
+                                <div>
+                                    <i class="fas fa-code-branch"></i> 1
+                                </div>
+                                <div>
+                                    更新于 1 个月前
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 管理员上传区域 -->
-                <div v-if="isAdminMode" class="upload-area mt-8">
-                    <h3 class="upload-title">上传新产品</h3>
-                    <div class="upload-form">
-                        <div class="form-group">
-                            <label class="form-label">产品名称</label>
-                            <input v-model="newProduct.name" type="text" class="form-input" placeholder="输入产品名称">
+                <!-- 动态部分 -->
+                <div id="activity" class="tab-content" style="display: none;">
+                    <div class="contribution-graph">
+                        <div class="graph-header">
+                            <div class="graph-title">最近动态</div>
+                            <div style="font-size: 14px; color: var(--github-text-secondary);">过去30天</div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">产品描述</label>
-                            <textarea v-model="newProduct.description" class="form-textarea"
-                                placeholder="描述产品功能和特点"></textarea>
+                        <div class="graph-container" id="contributionGraph">
+                            <!-- 贡献图通过JavaScript生成 -->
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">产品文件</label>
-                            <input type="file" class="form-file" @change="handleFileSelect"
-                                accept=".zip,.rar,.7z,.tar.gz">
+                    </div>
+
+                    <div class="activity-list">
+                        <!-- 动态条目 1 -->
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-code-branch" style="color: var(--github-blue);"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-text">
+                                    在 <strong>vue-admin-system</strong> 仓库创建了新的分支 <strong>feature/user-roles</strong>
+                                </div>
+                                <div class="activity-time">3小时前</div>
+                            </div>
                         </div>
-                        <button class="btn btn-primary" @click="addProduct" :disabled="!canAddProduct">
-                            添加产品
-                        </button>
+
+                        <!-- 动态条目 2 -->
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="far fa-star" style="color: var(--github-orange);"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-text">
+                                    给 <strong>tensorflow/models</strong> 仓库点了个星
+                                </div>
+                                <div class="activity-time">1天前</div>
+                            </div>
+                        </div>
+
+                        <!-- 动态条目 3 -->
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-code-commit" style="color: var(--github-green);"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-text">
+                                    向 <strong>react-utility-hooks</strong> 仓库提交了代码：<em>修复useFetch的内存泄漏问题</em>
+                                </div>
+                                <div class="activity-time">2天前</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 贡献部分 -->
+                <div id="contributions" class="tab-content" style="display: none;">
+                    <div class="contribution-graph">
+                        <div class="graph-header">
+                            <div class="graph-title">贡献度图表</div>
+                            <div style="font-size: 14px; color: var(--github-text-secondary);">过去一年</div>
+                        </div>
+                        <div class="graph-container" id="yearlyGraph">
+                            <!-- 年度贡献图通过JavaScript生成 -->
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <h3 style="margin-bottom: 16px; font-size: 18px;">贡献统计</h3>
+                        <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 24px; font-weight: 600; color: var(--github-green);">1,248</div>
+                                <div style="font-size: 14px; color: var(--github-text-secondary);">总提交</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 24px; font-weight: 600; color: var(--github-blue);">42</div>
+                                <div style="font-size: 14px; color: var(--github-text-secondary);">Pull Requests</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 24px; font-weight: 600; color: var(--github-purple);">18</div>
+                                <div style="font-size: 14px; color: var(--github-text-secondary);">问题报告</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 24px; font-weight: 600; color: var(--github-orange);">7</div>
+                                <div style="font-size: 14px; color: var(--github-text-secondary);">仓库创建</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
-
-        <!-- 文件管理（仅管理员可见） -->
-        <section v-if="isAdminMode" class="section files-section">
-            <div class="container">
-                <h2 class="section-title">文件管理</h2>
-                <p class="section-subtitle">
-                    管理所有已上传的文件和资源
-                </p>
-
-                <div class="files-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>文件名</th>
-                                <th>大小</th>
-                                <th>上传时间</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="file in files" :key="file.id">
-                                <td>{{ file.name }}</td>
-                                <td>{{ file.size }}</td>
-                                <td>{{ file.uploadTime }}</td>
-                                <td>
-                                    <div class="flex gap-2">
-                                        <a :href="file.downloadUrl" class="btn btn-outline btn-sm" download>
-                                            下载
-                                        </a>
-                                        <button class="btn btn-danger btn-sm" @click="deleteFile(file.id)">
-                                            删除
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
+        </main>
 
         <!-- 页脚 -->
-        <footer class="section bg-gray-50">
-            <div class="container text-center">
-                <p class="text-gray-600">
-                    © 2025 CoMoYo-Yanke. 保留所有权利.
-                    <span class="text-primary-500">用心创造，分享价值</span>
-                </p>
+        <footer class="footer container">
+            <div>
+                <i class="fab fa-github" style="font-size: 24px; margin-bottom: 10px;"></i>
+                <div>© 2025 CoMoYo-Yanke. 保留所有权利。</div>
+                <div style="margin-top: 8px; font-size: 13px;">本页面设计灵感来自GitHub</div>
+            </div>
+            <div class="footer-links">
+                <a href="#" class="footer-link">关于</a>
+                <a href="#" class="footer-link">联系方式</a>
+                <a href="#" class="footer-link">隐私政策</a>
+                <a href="#" class="footer-link">使用条款</a>
             </div>
         </footer>
     </div>
 </template>
 
-<style scoped>
-/* 基础样式 */
+<style>
+:root {
+    --github-bg: #121923;
+    --github-header: #161b22;
+    --github-border: #30363d;
+    --github-text: #c9d1d9;
+    --github-text-secondary: #8b949e;
+    --github-blue: #58a6ff;
+    --github-green: #238636;
+    --github-purple: #8957e5;
+    --github-orange: #f78166;
+    --github-a: #F0F6FC;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    a{
+        color: var(--github-a);
+        text-decoration: none;
+    }
+    a:hover{
+        text-decoration: solid;
+    }
+}
+
+body {
+    /* background-color: var(--github-bg);
+    color: var(--github-text); */
+    color: var(--github-text);
+    background-color: var(--github-bg);
+
+    /* color: #c9d1d9;
+    background-color: #121923; */
+    line-height: 1.5;
+}
+body::-webkit-scrollbar{
+    background-color: var(--github-bg);
+    width: 8px;
+
+}
+body::-webkit-scrollbar-thumb{
+    background-color: var(--github-border);
+    border-radius: 5px;
+}
 .container {
-    max-width: 1200px;
+    max-width: 1280px;
     margin: 0 auto;
     padding: 0 20px;
 }
 
-/* 导航栏 */
-.navbar {
-    background: #fff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+/* 头部导航 */
+.header {
+    background-color: var(--github-header);
+    border-bottom: 1px solid var(--github-border);
     position: sticky;
     top: 0;
     z-index: 100;
 }
 
-.nav-content {
+.nav {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    height: 60px;
+    justify-content: space-between;
+    padding: 12px 0;
 }
 
-.logo {
-    color: #333;
-    font-size: 1.5rem;
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 20px;
 }
 
-.admin-btn {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    cursor: pointer;
+.nav-logo i {
+    color: var(--github-blue);
 }
 
-/* Hero区域 */
-.hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 80px 0;
-    text-align: center;
+.nav-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.nav-link {
+    color: var(--github-text);
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .avatar {
-    width: 120px;
-    height: 120px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    margin-bottom: 20px;
-    border: 4px solid white;
+    border: 1px solid var(--github-border);
 }
 
-.hero h1 {
-    font-size: 2.5rem;
+/* 主要内容布局 */
+.main-content {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+}
+
+/* 左侧边栏 - 个人资料 */
+.sidebar {
+    width: 25%;
+    position: sticky;
+    top: 80px;
+    height: fit-content;
+}
+
+.profile-card {
+    border: 1px solid var(--github-border);
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.profile-header {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid var(--github-border);
+}
+
+.profile-info h2 {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.profile-username {
+    color: var(--github-text-secondary);
+    font-size: 16px;
     margin-bottom: 10px;
 }
 
-.hero p {
-    font-size: 1.2rem;
+.profile-bio {
+    font-size: 12px;
     margin-bottom: 20px;
-    opacity: 0.9;
+    color: var(--github-text-secondary);
 }
 
-.contact a {
-    color: white;
-    margin: 0 10px;
+.profile-stats {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--github-text-secondary);
+}
+
+.stat-count {
+    font-weight: 600;
+    color: var(--github-text);
+}
+
+.profile-location,
+.profile-email {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--github-text-secondary);
+}
+
+/* 主要内容区域 */
+.content {
+    width: 75%;
+}
+
+.tab-nav {
+    display: flex;
+    border-bottom: 1px solid var(--github-border);
+    margin-bottom: 20px;
+}
+
+.tab {
+    padding: 12px 20px;
+    background: none;
+    border: none;
+    color: var(--github-text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+    position: relative;
+    transition: color 0.2s;
+}
+
+.tab:hover {
+    color: var(--github-text);
+}
+
+.tab.active {
+    color: var(--github-text);
+    font-weight: 500;
+}
+
+.tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #f78166;
+}
+
+.tab-count {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 12px;
+    margin-left: 6px;
+}
+
+/* 项目卡片 */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.project-card {
+    border: 1px solid var(--github-border);
+    border-radius: 6px;
+    padding: 16px;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.project-card:hover {
+    border-color: var(--github-blue);
+    transform: translateY(-2px);
+}
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.project-title {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--github-blue);
     text-decoration: none;
 }
 
-/* 产品区域 */
-.products {
-    padding: 80px 0;
-    background: #f8f9fa;
+.project-title:hover {
+    text-decoration: underline;
 }
 
-.products h2 {
-    text-align: center;
-    font-size: 2rem;
-    margin-bottom: 40px;
-    color: #333;
+.project-visibility {
+    border: 1px solid var(--github-border);
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 12px;
+    color: var(--github-text-secondary);
 }
 
-.products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    margin-bottom: 40px;
+.project-description {
+    font-size: 14px;
+    margin-bottom: 16px;
+    color: var(--github-text-secondary);
+    line-height: 1.4;
 }
 
-.product-card {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    position: relative;
+.project-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--github-text-secondary);
 }
 
-.product-card h3 {
-    color: #333;
-    margin-bottom: 15px;
+.project-language {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
-.product-card p {
-    color: #666;
-    margin-bottom: 20px;
-    line-height: 1.6;
+.language-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
 }
 
-.product-footer {
+.javascript {
+    background-color: #f1e05a;
+}
+
+.python {
+    background-color: #3572a5;
+}
+
+.vue {
+    background-color: #41b883;
+}
+
+.css {
+    background-color: #563d7c;
+}
+
+.html {
+    background-color: #e34c26;
+}
+
+/* 活动列表 */
+.activity-list {
+    border: 1px solid var(--github-border);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.activity-item {
+    padding: 16px;
+    border-bottom: 1px solid var(--github-border);
+    display: flex;
+    gap: 12px;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--github-header);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-text {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.activity-time {
+    font-size: 12px;
+    color: var(--github-text-secondary);
+}
+
+/* 贡献图 */
+.contribution-graph {
+    border: 1px solid var(--github-border);
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.graph-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 16px;
 }
 
-.download-btn {
-    background: #28a745;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 5px;
-    text-decoration: none;
+.graph-title {
+    font-weight: 600;
+    font-size: 16px;
 }
 
-.delete-btn {
-    background: #dc3545;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-/* 管理员面板 */
-.admin-panel {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.admin-panel h3 {
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.upload-form {
+.graph-container {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
+    gap: 4px;
+    flex-wrap: wrap;
 }
 
-.upload-form input,
-.upload-form textarea {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
+.graph-cell {
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+    background-color: #161b22;
 }
 
-.upload-form textarea {
-    min-height: 100px;
-    resize: vertical;
+.graph-cell.level-0 {
+    background-color: #161b22;
 }
 
-.upload-form button {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
+.graph-cell.level-1 {
+    background-color: #0e4429;
+}
+
+.graph-cell.level-2 {
+    background-color: #006d32;
+}
+
+.graph-cell.level-3 {
+    background-color: #26a641;
+}
+
+.graph-cell.level-4 {
+    background-color: #39d353;
 }
 
 /* 页脚 */
-footer {
-    background: #333;
-    color: white;
+.footer {
+    border-top: 1px solid var(--github-border);
+    padding: 40px 0;
+    margin-top: 40px;
     text-align: center;
-    padding: 30px 0;
+    color: var(--github-text-secondary);
+    font-size: 14px;
 }
 
-/* 响应式 */
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.footer-link {
+    color: var(--github-blue);
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    text-decoration: underline;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+    .main-content {
+        flex-direction: column;
+    }
+
+    .sidebar,
+    .content {
+        width: 100%;
+    }
+
+    .sidebar {
+        position: static;
+    }
+}
+
 @media (max-width: 768px) {
-    .container {
-        padding: 0 15px;
+    .nav-links .nav-link:not(:last-child) {
+        display: none;
     }
 
-    .hero h1 {
-        font-size: 2rem;
-    }
-
-    .products-grid {
+    .projects-grid {
         grid-template-columns: 1fr;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
     }
 }
 </style>
