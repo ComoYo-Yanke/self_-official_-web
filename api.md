@@ -4,14 +4,16 @@
 
 - **版本**: v1.0
 - **最后更新**: 2025-11-19
-- **维护者**: 开发团队
+- **维护者**: CoMoYo
 
 ## 基础信息
-
+方式: 前后端分离
 ### 服务地址
 ```
-开发环境: http://localhost:3000/api
-生产环境: https://api.yourdomain.com/api
+- 开发环境: 
+  前端: http://127.0.0.1:5173
+  后端: http://127.0.0.1:8080
+- 生产环境: 
 ```
 
 ### 通用约定
@@ -29,17 +31,17 @@
 
 ## 响应格式规范
 
-### 成功响应
+### 成功响应 Result success
 ```json
 {
   "code": 200,
-  "message": "操作成功",
+  "message": "success",
   "data": {},
   "timestamp": "2024-01-20T10:00:00Z"
 }
 ```
 
-### 错误响应
+### 错误响应 Result error
 ```json
 {
   "code": 400,
@@ -97,7 +99,7 @@ Content-Type: application/json
 ```json
 {
   "code": 200,
-  "message": "登录成功",
+  "message": "success",
   "data": {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
     "user": {
@@ -115,6 +117,7 @@ Content-Type: application/json
 - 400: 请求参数错误
 - 401: 用户名或密码错误
 - 429: 请求过于频繁
+- 403: 拒绝当前IP访问
 
 ---
 
@@ -136,7 +139,7 @@ Content-Type: application/json
 ```json
 {
   "code": 200,
-  "message": "退出成功",
+  "message": "success",
   "data": null,
   "timestamp": "2024-01-20T10:00:00Z"
 }
