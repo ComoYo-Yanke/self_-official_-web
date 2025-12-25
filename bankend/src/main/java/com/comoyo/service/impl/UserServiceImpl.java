@@ -20,7 +20,6 @@ public class UserServiceImpl implements UserService {
     
     @Override
     public void register(User user){
-        System.out.println(LocalDateTime.now());
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
         userMapper.register(user);
