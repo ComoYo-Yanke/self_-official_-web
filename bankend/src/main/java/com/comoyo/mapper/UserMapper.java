@@ -9,4 +9,6 @@ public interface UserMapper {
      User gerUserById(Integer id);
     
     void register(User user);
+    
+    void deleteById(Integer id);
 }

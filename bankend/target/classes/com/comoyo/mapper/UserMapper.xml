@@ -11,6 +11,10 @@
              #{role}, #{createdAt}, #{updatedAt})
 
     </insert>
+    <delete id="deleteById">
+        delete from user
+        where id = #{id};
+    </delete>
 
     <select id="gerUserById" resultType="com.comoyo.pojo.User">
         select u.*
