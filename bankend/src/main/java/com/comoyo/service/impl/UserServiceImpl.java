@@ -6,6 +6,8 @@ import com.comoyo.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class UserServiceImpl implements UserService {
     
@@ -14,6 +16,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Integer id){
         return userMapper.gerUserById(id);
+    }
+    
+    @Override
+    public void register(User user){
+        System.out.println(LocalDateTime.now());
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+        userMapper.register(user);
     }
 
 }
