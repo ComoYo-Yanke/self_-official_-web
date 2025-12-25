@@ -4,4 +4,9 @@
 
 <mapper namespace="com.comoyo.mapper.UserMapper">
 
+    <select id="gerUserById" resultType="com.comoyo.pojo.User">
+        select u.*
+        from user u
+        where id = #{id};
+    </select>
 </mapper>
