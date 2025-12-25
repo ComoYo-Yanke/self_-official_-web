@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class User {
     private Integer id; // 用户id
     private String username; // 用户名
+    private String password; // 密码
     private String name; // 昵称
     private String avatarURL; // 头像
     private String bio; // 个人简介
@@ -18,7 +19,7 @@ public class User {
     private String email; // 邮箱
     private String github;
     private String bilibili;
-    private String role; // 角色
+    private Integer role; // 角色 1 管理员 2 普通用户 3 测试用户
     private LocalDateTime createdAt; // 创建时间
     private LocalDateTime updatedAt; // 最后更新时间
     
@@ -27,6 +28,7 @@ public class User {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", avatarURL='" + avatarURL + '\'' +
                 ", bio='" + bio + '\'' +
@@ -54,6 +56,14 @@ public class User {
     
     public void setUsername(String username) {
         this.username = username;
+    }
+    
+    public String getPassword() {
+        return password;
+    }
+    
+    public void setPassword(String password) {
+        this.password = password;
     }
     
     public String getName() {
@@ -112,11 +122,11 @@ public class User {
         this.bilibili = bilibili;
     }
     
-    public String getRole() {
+    public Integer getRole() {
         return role;
     }
     
-    public void setRole(String role) {
+    public void setRole(Integer role) {
         this.role = role;
     }
     

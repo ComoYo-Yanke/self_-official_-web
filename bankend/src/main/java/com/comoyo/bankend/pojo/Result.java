@@ -53,6 +53,7 @@ public class Result {
         result.data = object;
         result.code = 1;
         result.msg = "success";
+        result.date = LocalDateTime.now();
         return result;
     }
     
