@@ -1,4 +1,4 @@
-package com.comoyo.bankend.pojo;
+package com.comoyo.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

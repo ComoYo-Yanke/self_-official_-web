@@ -1,7 +1,7 @@
-package com.comoyo.bankend.service;
+package com.comoyo.service;
 
 
-import com.comoyo.bankend.pojo.User;
+import com.comoyo.pojo.User;
 
 public interface UserService {
     

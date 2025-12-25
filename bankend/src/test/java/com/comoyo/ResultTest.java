@@ -1,6 +1,6 @@
-package com.comoyo.bankend;
+package com.comoyo;
 
-import com.comoyo.bankend.pojo.Result;
+import com.comoyo.pojo.Result;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

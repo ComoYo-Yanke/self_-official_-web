@@ -1,18 +1,12 @@
-package com.comoyo.bankend.pojo;
+package com.comoyo.pojo;
 
-import ch.qos.logback.classic.pattern.ClassOfCallerConverter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cglib.core.Local;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.chrono.ChronoLocalDate;
-import java.util.Date;
 
 
 /**

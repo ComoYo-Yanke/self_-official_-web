@@ -1,7 +1,7 @@
-package com.comoyo.bankend.controller;
+package com.comoyo.controller;
 
-import com.comoyo.bankend.service.UserService;
-import com.comoyo.bankend.pojo.Result;
+import com.comoyo.service.UserService;
+import com.comoyo.pojo.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

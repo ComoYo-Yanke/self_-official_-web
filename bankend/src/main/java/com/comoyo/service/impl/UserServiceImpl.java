@@ -1,8 +1,8 @@
-package com.comoyo.bankend.service.impl;
+package com.comoyo.service.impl;
 
-import com.comoyo.bankend.mapper.UserMapper;
-import com.comoyo.bankend.service.UserService;
-import com.comoyo.bankend.pojo.User;
+import com.comoyo.mapper.UserMapper;
+import com.comoyo.service.UserService;
+import com.comoyo.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

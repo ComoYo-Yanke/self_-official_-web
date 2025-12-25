@@ -1,11 +1,11 @@
-package com.comoyo.bankend.mapper;
+package com.comoyo.mapper;
 
-import com.comoyo.bankend.pojo.User;
+import com.comoyo.pojo.User;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface UserMapper {
-    
+     
      User gerUserById(Integer id);
     
 }
