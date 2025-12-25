@@ -1,6 +1,6 @@
-package com.comoyo.bankend.Controller;
+package com.comoyo.bankend.controller;
 
-import com.comoyo.bankend.Service.UserService;
+import com.comoyo.bankend.service.UserService;
 import com.comoyo.bankend.pojo.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
