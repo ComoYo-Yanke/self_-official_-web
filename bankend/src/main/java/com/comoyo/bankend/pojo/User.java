@@ -19,7 +19,7 @@ public class User {
     private String email; // 邮箱
     private String github;
     private String bilibili;
-    private String role; // 角色
+    private Integer role; // 角色 1 管理员 2 普通用户 3 测试用户
     private LocalDateTime createdAt; // 创建时间
     private LocalDateTime updatedAt; // 最后更新时间
     
@@ -122,11 +122,11 @@ public class User {
         this.bilibili = bilibili;
     }
     
-    public String getRole() {
+    public Integer getRole() {
         return role;
     }
     
-    public void setRole(String role) {
+    public void setRole(Integer role) {
         this.role = role;
     }
     
