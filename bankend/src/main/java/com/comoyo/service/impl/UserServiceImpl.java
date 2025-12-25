@@ -25,5 +25,10 @@ public class UserServiceImpl implements UserService {
         user.setUpdatedAt(LocalDateTime.now());
         userMapper.register(user);
     }
+    
+    @Override
+    public void deleteById(Integer id){
+    
+    }
 
 }

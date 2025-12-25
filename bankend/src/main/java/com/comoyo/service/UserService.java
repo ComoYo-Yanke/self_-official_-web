@@ -8,4 +8,6 @@ public interface UserService {
     User getUserById(Integer id);
     
     void register(User user);
+    
+    void deleteById(Integer id);
 }

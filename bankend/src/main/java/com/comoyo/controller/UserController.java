@@ -37,7 +37,7 @@ public class UserController {
     @DeleteMapping
     public Result deleteById(Integer id){
         log.info("根据id删除用户：{}", id);
-        
+        userService.deleteById(id);
         return Result.success();
     }
 }
