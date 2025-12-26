@@ -13,3 +13,12 @@ create table user(
                      created_at datetime comment "创建时间",
                      updated_at datetime comment "更新时间"
 );
+
+insert into user
+(id, username, password, name, avatarURL, bio, location, email, github, bilibili, role)
+    value
+    (1, 'admin', '123456', '管理员', 'https://avatars.githubusercontent.com/u/102040668?v=4', '管理员', '中国',
+     '123456@qq.com', 'null', 'null', 1);
+
+alter table user drop id;
+alter table user add column id int auto_increment primary key unique comment "用户id";
